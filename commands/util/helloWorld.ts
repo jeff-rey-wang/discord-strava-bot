@@ -1,5 +1,5 @@
-import { SlashCommandBuilder } from 'discord.js';
-import { Command } from '../../models/command.model';
+import { CommandInteraction, SlashCommandBuilder, type ChatInputApplicationCommandData, type Interaction } from 'discord.js';
+import type { Command } from '../../models/command.model.ts';
 import { randomEmoji } from '../../utils.ts';
 
 // Declare minimum command requirements (Name + Description)
@@ -8,7 +8,7 @@ const helloWorld: SlashCommandBuilder = new SlashCommandBuilder()
     .setDescription(`Hello World`); // Command Description
 
 // Steps to execute when command is called
-const executionSteps = async function (interaction: any): Promise<void> {
+const executionSteps = async function (interaction: CommandInteraction): Promise<void> {
     // Reply to interaction
     await interaction.reply(`Hello World!  ${randomEmoji()}`);
 }

@@ -1,18 +1,22 @@
-import { Client, Collection, GatewayIntentBits } from "discord.js";
-import { Command } from "./models/command.model";
+import { Client, Collection, GatewayIntentBits, REST, Routes } from "discord.js";
+import type { Command } from "./models/command.model.ts";
+import type { SlashCommandBuilderJSON } from "./models/slashCommandBuilderJson.model.ts";
 
 // New client instance
 // Extend Client to include commands property
 export interface CustomClient extends Client {
-    commands: Collection<any, any>;
+    commands: Collection<string, Command>;
 }
 
 export function initClient(intents: GatewayIntentBits[], commands: Command[]): CustomClient {
     try {
+        // Create new client instance with specified intents
         let client = new Client({
             intents: intents,
         }) as CustomClient;
-        client.commands = new Collection(); // Initialize commands collection
+
+        // Initialize commands collection
+        client.commands = new Collection(); 
         for (const command of commands) {
             // Register commands with the client
             // set takes (key, value)
@@ -24,14 +28,47 @@ export function initClient(intents: GatewayIntentBits[], commands: Command[]): C
                     continue; // Skip invalid command
                 }
                 client.commands.set(command.data.name, command);
+                console.log(`InitClient - Registered command: ${command.data.name}`);
             } catch {
                 console.log(`Error registering command ${command.data.name ? command.data.name : 'Unknown Command' }`);
             }
         }
+        deployCommands(commands);
+
         return client;
     } catch (err) {
         throw new Error('Error - initClient: ' + err);
     }
+}
+
+// This function deploys commands to Discord via REST API
+function deployCommands(commands: Command[]): void {
+    const commandJSONList: SlashCommandBuilderJSON[] = [];
+    // Compile command data for deployment
+    try {
+        console.log('InitClient - Compiling command data for Deployment')
+        for (const command of commands) {
+            console.log(`Preparing command for deployment: ${command.data.name}`);
+            commandJSONList.push(command.data.toJSON() as SlashCommandBuilderJSON);
+        }
+    } catch (err) {
+        console.log('InitClient - Error compiling command data:', err);
+    }
+
+    // Deploy Commands
+    const rest = new REST().setToken(process.env.DISCORD_TOKEN!);
+    (async () => {
+        try {
+            console.log(`Attempting to refresh ${commandJSONList.length} Slash-commands.`);
+            const data = await rest.put(
+                Routes.applicationCommands(process.env.APP_ID!),
+                { body: commandJSONList }
+            );
+            console.log(`Successfully reloaded ${commandJSONList.length} Slash-commands.`);
+        } catch (err) {
+            console.error('Error deploying commands:', err);
+        }
+    })();
 }
 
 export function randomEmoji(): string {

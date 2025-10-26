@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "compilerOptions": {
+    /* Target modern JS that Node 22 supports */
+    "target": "ES2022",               
+
+    /* Use Node’s latest module system; “nodenext” supports both CJS and ESM as needed */
+    "module": "nodenext",             
+
+    /* How modules are resolved (import/require, type-only vs value) */
+    "moduleResolution": "nodenext",     
+
+    /* Strict type checking = good defaults */
+    "strict": true,                    
+
+    /* For compatibility with many JS libraries, allow synthetic default imports */
+    "esModuleInterop": true,           
+    "forceConsistentCasingInFileNames": true,
+
+    /* Skip checking .d.ts in node_modules (faster builds) */
+    "skipLibCheck": true,              
+
+    /* These help when using .js / .ts import extension mix with ESM and Node22 native TS features */
+    "allowImportingTsExtensions": true,
+    "rewriteRelativeImportExtensions": true,
+    "verbatimModuleSyntax": true,
+
+    /* If you're emitting output (when not using node’s type stripping) */
+    "outDir": "./dist",
+    "rootDir": "."                  
+  },
+
+  "include": ["**/*.ts"],
+  "exclude": ["node_modules", "**/*.spec.ts"]
+}
