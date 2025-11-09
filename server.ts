@@ -10,8 +10,8 @@ dotenv.config();
 
 // Setting up Express server
 // This is going to listen for incoming requests from Strava?
-const app = express()
-const PORT = process.env.PORT || 3000;
+// const app = express()
+// const PORT = process.env.PORT || 3000;
 
 // Saving Token from env variables
 const TOKEN = process.env.DISCORD_TOKEN;
@@ -33,12 +33,12 @@ try {
 
 // Log Client start
 client.once(Events.ClientReady, async (readyClient) => {
-    console.log(`Client Initialized as ${readyClient.user.tag}`);
+    console.log(`Main - Client Initialized as ${readyClient.user.tag}, with PID:PORT: ${process.pid}:${process.env.PORT}`);
 });
 
 // Handling Slash Command interactions only
 client.on(Events.InteractionCreate, async (interaction: Interaction)  => {
-    console.log('Interaction received:', interaction.id);
+    console.log('Main - Interaction received:', interaction.id);
     // Only handle slash commands
     if (!interaction.isChatInputCommand()) return;
     
@@ -52,7 +52,7 @@ client.on(Events.InteractionCreate, async (interaction: Interaction)  => {
     try {
         // Logs the interaction
         await command.execute(interaction);
-        console.log(`Executed command: ${interaction.commandId} by user: ${interaction.user.tag}`);
+        console.log(`Main - Executed command: ${interaction.commandId} by user: ${interaction.user.tag}`);
     } catch (err) {
         console.log('Error handling interaction:', err);
         await interaction.reply({ 

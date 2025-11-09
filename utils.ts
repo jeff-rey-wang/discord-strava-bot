@@ -24,9 +24,10 @@ export function initClient(intents: GatewayIntentBits[], commands: Command[]): C
             // value: command, the exported command object
             try {
                 if (!command.data || !command.execute) {
-                    console.log(`Invalid command structure for command: ${command}`);
+                    console.log(`InitClient - Invalid command structure for command: ${command}`);
                     continue; // Skip invalid command
                 }
+                console.log(`InitClient - Found command: ${command.data.name}`);
                 client.commands.set(command.data.name, command);
                 console.log(`InitClient - Registered command: ${command.data.name}`);
             } catch {
@@ -46,27 +47,27 @@ function deployCommands(commands: Command[]): void {
     const commandJSONList: SlashCommandBuilderJSON[] = [];
     // Compile command data for deployment
     try {
-        console.log('InitClient - Compiling command data for Deployment')
+        console.log('DeployCommand - Compiling command data for Deployment')
         for (const command of commands) {
-            console.log(`Preparing command for deployment: ${command.data.name}`);
+            console.log(`DeployCommand - Preparing command for deployment: '${command.data.name}'`);
             commandJSONList.push(command.data.toJSON() as SlashCommandBuilderJSON);
         }
     } catch (err) {
-        console.log('InitClient - Error compiling command data:', err);
+        console.log('DeployCommand - Error compiling command data:', err);
     }
 
     // Deploy Commands
     const rest = new REST().setToken(process.env.DISCORD_TOKEN!);
     (async () => {
         try {
-            console.log(`Attempting to refresh ${commandJSONList.length} Slash-commands.`);
+            console.log(`DeployCommand - Attempting to refresh ${commandJSONList.length} Slash-commands.`);
             const data = await rest.put(
                 Routes.applicationCommands(process.env.APP_ID!),
                 { body: commandJSONList }
             );
-            console.log(`Successfully reloaded ${commandJSONList.length} Slash-commands.`);
+            console.log(`DeployCommand - Successfully deployed ${commandJSONList.length} Slash-commands.`);
         } catch (err) {
-            console.error('Error deploying commands:', err);
+            console.error('DeployCommand - Error deploying commands:', err);
         }
     })();
 }
