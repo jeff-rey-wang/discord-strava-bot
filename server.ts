@@ -38,6 +38,7 @@ client.once(Events.ClientReady, async (readyClient) => {
 
 // Handling Slash Command interactions only
 client.on(Events.InteractionCreate, async (interaction: Interaction)  => {
+    console.log('Interaction received:', interaction.id);
     // Only handle slash commands
     if (!interaction.isChatInputCommand()) return;
     
